@@ -3,6 +3,7 @@ import sys
 from typing import Dict
 from wand.image import Image
 import midiutil.MidiFile as MidiFile
+import re
 
 #
 #
@@ -82,6 +83,10 @@ def read_color_map(path: str) -> Dict[str, int]:
 #
 #
 
+# Function to generate a natural sort key for each filename
+def natural_sort_key(s):
+    return [int(text) if text.isdigit() else text.lower() for text in re.split(r'(\d+)', s)]
+
 def ImagesToAnimationSource(dirName: str, bpm: int):
     source = AnimationSource()
     source.name = dirName
@@ -91,7 +96,9 @@ def ImagesToAnimationSource(dirName: str, bpm: int):
     # Get all the images in the directory, check if the file is not .aseprite
     images = [f for f in os.listdir(dirName) if os.path.isfile(
         os.path.join(dirName, f)) and not f.endswith(".aseprite")]
-    images.sort()
+    images = sorted(images, key=natural_sort_key)
+    
+    print(images)
 
     source.FrameCount = len(images)
 
